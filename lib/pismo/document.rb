@@ -62,6 +62,7 @@ module Pismo
             html.encode!("ASCII-8BIT", :invalid => :replace, :undef => :replace, :replace => '?') if !html.valid_encoding?
           end
         end
+        html
     end
 
     def self.clean_html(html)
