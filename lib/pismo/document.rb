@@ -35,7 +35,8 @@ module Pismo
               else
                 handle
               end
-              
+
+      @html = self.class.handle_content_encoding(@html)        
       @html = self.class.clean_html(@html)
       
       @doc = Nokogiri::HTML(@html)
@@ -45,6 +46,24 @@ module Pismo
       @doc.match([*args], all)
     end
     
+    def self.handle_content_encoding(html)
+        # Ruby version is greater than 1.9, so use the native
+        # String.encoding method of handling unicode
+        # TODO: Handle < 1.9 with Iconv --  Wed Feb 29 15:24:18 2012
+        if RUBY_VERSION > "1.9"
+          # If the raw content is marked as UTF-8 and is not valid,
+          # clean it up by replacing invalidly encoded chars with '?',
+          # otherwise if the encoding is not UTF-8, try to force the
+          # conversion and if that fails try to force the content into ASCII-8BIT
+          if html.encoding == 'UTF-8' && html.valid_encoding? == false
+             html.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => '?')
+          elsif html.encoding != 'UTF-8'
+            html.encode!("UTF-8", :invalid => :replace, :replace => '?')
+            html.encode!("ASCII-8BIT", :invalid => :replace, :undef => :replace, :replace => '?') if !html.valid_encoding?
+          end
+        end
+    end
+
     def self.clean_html(html)
       # Normalize stupid entities
       # TODO: Optimize this so we don't need all these sequential gsubs
