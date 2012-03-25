@@ -58,7 +58,7 @@ module Pismo
           if html.encoding == 'UTF-8' && html.valid_encoding? == false
              html.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => '?')
           elsif html.encoding != 'UTF-8'
-            html.encode!("UTF-8", :invalid => :replace, :replace => '?')
+            html.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => '?')
             html.encode!("ASCII-8BIT", :invalid => :replace, :undef => :replace, :replace => '?') if !html.valid_encoding?
           end
         end
